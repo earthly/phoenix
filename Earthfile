@@ -20,7 +20,7 @@ all-integration-test:
     BUILD --build-arg ELIXIR=1.11.1 --build-arg OTP=23.1.1 +integration-test
 
 integration-test:
-    FROM +setup-integration
+    FROM +setup-base
 
     # Install tooling needed to check if the DBs are actually up when performing integration tests
     RUN apk add postgresql-client mysql-client
