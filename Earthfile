@@ -20,7 +20,17 @@ all-integration-test:
     BUILD --build-arg ELIXIR=1.11.1 --build-arg OTP=23.1.1 +integration-test
 
 integration-test:
-    FROM +setup-base
+    FROM +setup-integration
+
+    # Install tooling needed to check if the DBs are actually up when performing integration tests
+    RUN apk add postgresql-client mysql-client
+    RUN apk add --no-cache curl gnupg --virtual .build-dependencies -- && \
+        curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.5.2.1-1_amd64.apk && \
+        curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.5.2.1-1_amd64.apk && \
+        echo y | apk add --allow-untrusted msodbcsql17_17.5.2.1-1_amd64.apk mssql-tools_17.5.2.1-1_amd64.apk && \
+        apk del .build-dependencies && rm -f msodbcsql*.sig mssql-tools*.apk
+    ENV PATH="/opt/mssql-tools/bin:${PATH}"
+
     #integration test deps
     COPY /integration_test/docker-compose.yml ./integration_test/docker-compose.yml
     COPY mix.exs ./
@@ -32,14 +42,6 @@ integration-test:
     WORKDIR /src/integration_test
     RUN mix local.hex --force
     RUN mix deps.get
-
-    RUN apk add postgresql-client mysql-client
-    RUN apk add --no-cache curl gnupg --virtual .build-dependencies -- && \
-        curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.5.2.1-1_amd64.apk && \
-        curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.5.2.1-1_amd64.apk && \
-        echo y | apk add --allow-untrusted msodbcsql17_17.5.2.1-1_amd64.apk mssql-tools_17.5.2.1-1_amd64.apk && \
-        apk del .build-dependencies && rm -f msodbcsql*.sig mssql-tools*.apk
-    ENV PATH="/opt/mssql-tools/bin:${PATH}"
 
     #compile phoenix
     COPY --dir assets config installer lib test priv /src
