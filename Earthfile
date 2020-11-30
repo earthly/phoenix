@@ -44,10 +44,8 @@ integration-test:
     # RUN mix deps.get
     WITH DOCKER --compose docker-compose.yml
         # wait for all databases to respond before running the test
-        RUN while ! nc -z localhost 3306; do sleep 1; done; \
-            while ! nc -z localhost 1433; do sleep 1; done; \
-            while ! nc -z localhost 5432; do sleep 1; done; \
-            mix test --include database:mysql;
+        RUN sleep 120 && \
+            mix test --include database;
     END
 
 npm:
@@ -68,7 +66,7 @@ setup-base:
    ARG ELIXIR=1.11.2
    ARG OTP=23.1.1
    FROM hexpm/elixir:$ELIXIR-erlang-$OTP-alpine-3.12.0
-   RUN apk add --no-progress --update git # docker docker-compose
+   RUN apk add --no-progress --update git docker docker-compose
    ENV ELIXIR_ASSERT_TIMEOUT=10000
    WORKDIR /src
 
