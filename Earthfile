@@ -47,7 +47,7 @@ integration-test:
         RUN while ! nc -z localhost 3306; do sleep 1; done; \
             while ! nc -z localhost 1433; do sleep 1; done; \
             while ! nc -z localhost 5432; do sleep 1; done; \
-            mix test --include database;
+            mix test --include database:mysql;
     END
 
 npm:
