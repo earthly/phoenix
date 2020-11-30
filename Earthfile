@@ -33,6 +33,14 @@ integration-test:
     RUN mix local.hex --force
     RUN mix deps.get
 
+    RUN apk add postgresql-client mysql-client
+    RUN apk add --no-cache curl gnupg --virtual .build-dependencies -- && \
+        curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.5.2.1-1_amd64.apk && \
+        curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.5.2.1-1_amd64.apk && \
+        echo y | apk add --allow-untrusted msodbcsql17_17.5.2.1-1_amd64.apk mssql-tools_17.5.2.1-1_amd64.apk && \
+        apk del .build-dependencies && rm -f msodbcsql*.sig mssql-tools*.apk
+    ENV PATH="/opt/mssql-tools/bin:${PATH}"
+
     #compile phoenix
     COPY --dir assets config installer lib test priv /src
     RUN mix local.rebar --force
@@ -44,9 +52,9 @@ integration-test:
     # RUN mix deps.get
     WITH DOCKER --compose docker-compose.yml
         # wait for all databases to respond before running the test
-        RUN while ! nc -z localhost 3306; do sleep 1; done; \
-            while ! nc -z localhost 1433; do sleep 1; done; \
-            while ! nc -z localhost 5432; do sleep 1; done; \
+        RUN while ! sqlcmd -S localhost -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
+            while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \            
+            while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done;
             mix test --include database;
     END
 
