@@ -54,7 +54,7 @@ integration-test:
     # RUN mix deps.get
     WITH DOCKER --compose docker-compose.yml
         # wait for all databases to respond before running the test
-        RUN while ! sqlcmd -S localhost -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
+        RUN while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
             while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \            
             while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done; \
             mix test --include database;
