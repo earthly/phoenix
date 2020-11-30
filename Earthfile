@@ -66,7 +66,7 @@ setup-base:
    ARG ELIXIR=1.11.2
    ARG OTP=23.1.1
    FROM hexpm/elixir:$ELIXIR-erlang-$OTP-alpine-3.12.0
-   RUN apk add --no-progress --update git
+   RUN apk add --no-progress --update git docker docker-compose
    ENV ELIXIR_ASSERT_TIMEOUT=100000
    WORKDIR /src
 
