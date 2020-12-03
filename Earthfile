@@ -5,8 +5,6 @@ all:
     BUILD +npm
 
 all-test:
-    BUILD --build-arg ELIXIR=1.9.4  --build-arg OTP=20.3.8.26 +test
-    BUILD --build-arg ELIXIR=1.10.4 --build-arg OTP=23.1.1 +test
     BUILD --build-arg ELIXIR=1.11.0 --build-arg OTP=21.3.8.18 +test
     BUILD --build-arg ELIXIR=1.11.0 --build-arg OTP=23.1.1 +test
  
