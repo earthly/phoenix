@@ -51,7 +51,6 @@ integration-test:
     #run integration tests
     COPY integration_test/test  ./test
     COPY integration_test/config/config.exs  ./config/config.exs
-    # RUN mix deps.get
     WITH DOCKER --compose docker-compose.yml
         # wait for all databases to respond before running the test
         RUN while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
