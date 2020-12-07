@@ -1,3 +1,6 @@
+# Earthfile
+# 
+# The following blank line is required until https://github.com/earthly/earthly/issues/538 is resolved
 
 all:
     BUILD +all-test
