@@ -49,17 +49,18 @@ integration-test:
     #compile phoenix
     COPY --dir assets config installer lib test priv /src
     RUN mix local.rebar --force
-    RUN MIX_ENV=test mix deps.compile
+    # RUN MIX_ENV=test mix deps.compile
 
     #run integration tests
     COPY integration_test/test  ./test
     COPY integration_test/config/config.exs  ./config/config.exs
     WITH DOCKER --compose docker-compose.yml
         # wait for all databases to respond before running the test
-        RUN while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
-            while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \            
-            while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done; \
+        RUN MIX_ENV=test mix deps.compile && \
             mix test --include database;
+            # while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
+            # while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \            
+            # while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done; \
     END
 
 npm:
