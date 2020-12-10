@@ -56,8 +56,9 @@ integration-test:
     COPY integration_test/config/config.exs  ./config/config.exs
     WITH DOCKER --compose docker-compose.yml
         # wait for all databases to respond before running the test
-        RUN MIX_ENV=test mix deps.compile && \
-            mix test --include database;
+        RUN  mix test --include database 
+            #MIX_ENV=test mix deps.compile && \
+            #mix test --include database;
             # while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
             # while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \            
             # while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done; \
