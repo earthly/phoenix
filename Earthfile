@@ -95,3 +95,31 @@ test-setup:
    RUN mix local.rebar --force
    RUN mix local.hex --force
    RUN mix deps.get
+
+## Old
+integration-test-old:
+    FROM +setup-old
+    COPY --dir assets config installer lib integration_test priv test ./
+    WORKDIR /src/installer
+    RUN mix deps.get
+
+    WORKDIR /src/integration_test 
+    RUN mix deps.get
+    WITH DOCKER --compose docker-compose.yml
+        RUN mix test --include database
+    END 
+
+setup-old:
+   ARG ELIXIR
+   ARG OTP
+   FROM hexpm/elixir:$ELIXIR-erlang-$OTP-alpine-3.12.0
+   WORKDIR /src
+   RUN apk add --no-progress --update git build-base docker docker-compose
+   ENV ELIXIR_ASSERT_TIMEOUT=2000
+   COPY mix.exs .
+   COPY mix.lock .
+   COPY .formatter.exs .
+   COPY package.json .
+   RUN mix local.rebar --force
+   RUN mix local.hex --force
+   RUN mix deps.get
