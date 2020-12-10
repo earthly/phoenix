@@ -97,6 +97,22 @@ test-setup:
    RUN mix deps.get
 
 ## Old
+
+integration-test-old-no-compose:
+    FROM +setup-old
+    COPY --dir assets config installer lib integration_test priv test ./
+    WORKDIR /src/installer
+    RUN mix deps.get
+
+    WORKDIR /src/integration_test 
+    RUN mix deps.get
+    WITH DOCKER
+           RUN docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres && \
+            docker run --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -p 3306:3306 -d mysql && \
+            docker run --name mssql -e ACCEPT_EULA=Y -e SA_PASSWORD=some!Password -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest && \
+            mix test --include database
+    END 
+
 integration-test-old:
     FROM +setup-old
     COPY --dir assets config installer lib integration_test priv test ./
