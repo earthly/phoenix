@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download released earth
-        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
+        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/v0.3.19/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
       - name: Execute tests
         run: earth --build-arg ELIXIR=${{ matrix.elixir }}  --build-arg OTP=${{ matrix.otp }} +test
   integration-test-elixir:
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download released earth
-        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
+        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/v0.3.19/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
       - name: Execute tests
         run: earth -P --build-arg ELIXIR=${{ matrix.elixir }}  --build-arg OTP=${{ matrix.otp }} +integration-test
   npm_test:
@@ -48,6 +48,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download released earth
-        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
+        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/v0.3.19/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
       - name: Execute tests
         run: earth --build-arg ELIXIR=1.10.4  --build-arg OTP=23.0.3 +npm
