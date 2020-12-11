@@ -58,12 +58,16 @@ integration-test:
     COPY integration_test/config/config.exs  ./config/config.exs
   
     WITH DOCKER 
-        RUN docker-compose up -d & \                                                                                            # start docker compose
-            MIX_ENV=test mix deps.compile && \                                                                                  # in parellel start compiling
-            while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \   # is sql server up?
-            while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \                   # is mysql up? 
-            while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done; \                                        # is pg up? 
-            mix test --include database                                                                                         # lets test 
+        # Start docker compose
+        # In parallel start compiling tests
+        # Check for DB to be up x 3
+        # Run the database tests
+        RUN docker-compose up -d & \
+            MIX_ENV=test mix deps.compile && \
+            while ! sqlcmd -S tcp:localhost,1433 -U sa -P 'some!Password' -Q "SELECT 1" > /dev/null 2>&1; do sleep 1; done; \
+            while ! mysqladmin ping --host=localhost --port=3306 --protocol=TCP --silent; do sleep 1; done; \
+            while ! pg_isready --host=localhost --port=5432 --quiet; do sleep 1; done; \
+            mix test --include database 
     END 
 
 npm:
